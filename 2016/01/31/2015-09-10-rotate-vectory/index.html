@@ -1,0 +1,578 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>旋转向量算法 | Jacman</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lijunguan">
+    
+
+    
+    <meta name="description" content="下面我主要介绍三个优秀的算法（算法来自《编程之美》），并给出其中两个的Java实现。从中我们能体会到数学、优秀算法的奇妙，尤其是**求逆算法**，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="旋转向量算法">
+<meta property="og:url" content="http://lijunguan.github.io/2016/01/31/2015-09-10-rotate-vectory/index.html">
+<meta property="og:site_name" content="Jacman">
+<meta property="og:description" content="下面我主要介绍三个优秀的算法（算法来自《编程之美》），并给出其中两个的Java实现。从中我们能体会到数学、优秀算法的奇妙，尤其是**求逆算法**，">
+<meta property="og:image" content="http://lijunguan.github.io/images/2015-9-10_1.PNG">
+<meta property="og:image" content="http://lijunguan.github.io/images/2015-9-10_2.PNG">
+<meta property="og:image" content="http://lijunguan.github.io/images/2015-9-10_1.PNG">
+<meta property="og:updated_time" content="2016-01-31T02:49:06.759Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="旋转向量算法">
+<meta name="twitter:description" content="下面我主要介绍三个优秀的算法（算法来自《编程之美》），并给出其中两个的Java实现。从中我们能体会到数学、优秀算法的奇妙，尤其是**求逆算法**，">
+<meta name="twitter:creator" content="@jarkwu">
+<link rel="publisher" href="111190881341800841449">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Jacman" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Jacman" title="Jacman"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Jacman">Jacman</a></h1>
+				<h2 class="blog-motto">A fresh looking and responsive theme for Hexo</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/31/2015-09-10-rotate-vectory/" title="旋转向量算法" itemprop="url">旋转向量算法</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="https://plus.google.com/111190881341800841449?rel=author" title="lijunguan" target="_blank" itemprop="author">lijunguan</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-31T02:49:06.802Z" itemprop="datePublished"> 发表于 2016-01-31</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>这里我们用数组表示向量，任务是得到一个将原数组循环向左移动i位后的数组,就像这样[1,2,3,4,5,6,7] 移动前3位后[4,5,6,7,1,2,3]题再不做要求的情况下，可以很<br>轻松的完成，我们可以开辟一个和原数组同样大小的新数组，将原数组的前后两部分，调换顺序分别复制到新数组中即可。但是在时间、控件都有要求的情况下，就需要我们思考更好的算法了。</p>
+<p>下面我主要介绍三个优秀的算法（算法来自《编程之美》），并给出其中两个的Java实现。从中我们能体会到数学、优秀算法的奇妙，尤其是<strong>求逆算法</strong>，前面两个算法，对于新手来说是有一点难度的，但是求逆算法，通过数学的求逆思想，只需要了解一些线性代数的求逆知识，就可以轻松完成一个高效、简单的算法。</p>
+<p>###”杂技算法”<br><img src="/images/2015-9-10_1.PNG" alt="image1"></p>
+<pre><code>1. 移动x[0] -&gt; temp
+2. do x[i] -&gt; x[0] ,[2i] -&gt; [i]....
+3. while(ki mod n != 0) (k = 0,1,2...  ki &lt; n) -&gt; step2 //n为数组元素总个数
+4. x[ki] = temp ,loop（1-3）循环次数为 gcd(n,i)//最大公约数
+</code></pre><p>###递归算法</p>
+<pre><code>1. 将数组表示为 ab (a代表前i个元素)
+2. 假设a.length &lt; b.length  将b再分成b1、b2两段
+    - --&gt; ab1b2 (a = b2 b1+b2 = b) [这里都代之长度] 
+    - --&gt; 交换a和b2的位置 b2b1a (a以到达最终位置)
+3. 交换b2、b1位置，有重新回到了开始的问题，采用递归解决即可
+</code></pre><p>###<em>*求逆算法</em></p>
+<pre><code>1. 将数组表示为 ab (a代表前i个元素) 【假设存在求逆函数reverse(begin,end)
+2. 分别对ab求逆 -&gt; a逆b逆 (输入法实在打不出数学求逆符号，见谅)
+3. 再整体求逆 [a逆b逆]逆 --&gt; ba 就这么神奇，搞定了
+</code></pre><p>我想你有可能没有看懂上面神奇的求逆算法，主要是输入法问题，下面给出一个简单易懂的伪代码，表示了求逆算法的3步，reverse（）表示一个求逆方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reverse(0,i-1)      /*cba  defgh(&#23545;a&#27714;&#36870;)*/&#10;reverse(i,n-1)      /*cba  hgfed(&#23545;b&#27714;&#36870;)*/&#10;reverse(0,n-1)      /*defgh  abc(&#23545;&#25972;&#20307;&#27714;&#36870;)*/</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/wuchong/jacman.git themes/jacman</span><br></pre></td></tr></table></figure>
+<p>下面给出著名计算机科学家Doug Mcllroy给出的例子，帮助理解求逆原理，给出了将十元数组向上旋转5个位置的翻手例子，初始时掌心将对我们的脸，左手在右手上面。如下图所示<br><img src="/images/2015-9-10_2.PNG" alt="reverse"><br>数学真的太奇妙了，通过这个算法，连我这种渣都可以写出优秀高效的旋转向量代码，在线性代数求逆的帮助下，我们只需要写出一个最简单的reverse()方法即可，数学之美可见一斑啊，后悔到哭，数学太渣了。</p>
+<hr>
+<p>###下面给出Java版的代码实现</p>
+<p>####求逆算法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * Created by 俊管 on 2015/8/24.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">rotateVector</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 将传入的数组 指定段进行反转   </span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">private</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">reverse</span><span class="params">(T[] arr, <span class="keyword">int</span> begin, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(begin &lt; end)&#123; </span><br><span class="line">            T temp = arr[begin];</span><br><span class="line">            arr[begin++] = arr[end];  <span class="comment">//将end的值赋给begin，然后让begin+1</span></span><br><span class="line">            arr[end--] = temp; <span class="comment">//将temp赋值给end，然后end-1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">rotate</span><span class="params">(T[] arr, <span class="keyword">int</span> reverseNum)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> length = arr.length;</span><br><span class="line">        reverse(arr, <span class="number">0</span>, reverseNum - <span class="number">1</span>); <span class="comment">//对前半部分求逆</span></span><br><span class="line">       </span><br><span class="line">        reverse(arr, reverseNum,length-<span class="number">1</span>);<span class="comment">//都后半部分求逆</span></span><br><span class="line">     </span><br><span class="line">        reverse(arr,<span class="number">0</span>,length-<span class="number">1</span>); <span class="comment">//对整体求逆  完成反转</span></span><br><span class="line">        System.out.println(Arrays.toString(arr));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>####”杂技算法”</p>
+<blockquote>
+<p>杂技算法，需要用到欧几里得算法求两数的最大公约数来确定循环次数（gcd()俗称辗转相除法），数学知识，理论基础可以Google、百度一下。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Created by 俊管 on 2015/10/10.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RotateVector</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 泛型方法，接受一个泛型数组，和一个需要移动的位数</span><br><span class="line">     * <span class="doctag">@param</span> arr 需要旋转的数组</span><br><span class="line">     * <span class="doctag">@param</span> rotate 要移动的位数,</span><br><span class="line">     * <span class="doctag">@return</span> 旋转后的数组</span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">public</span>  &lt;T&gt; T[] rotateArray(T[] arr, <span class="keyword">int</span> rotate) &#123;</span><br><span class="line">        <span class="keyword">int</span> length = arr.length; <span class="comment">//数组长度</span></span><br><span class="line">        <span class="comment">//通过欧几里得算法求最大公约数，得到循环次数</span></span><br><span class="line">        <span class="keyword">int</span> loopNumber = <span class="keyword">this</span>.gcd(length, rotate);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; loopNumber; i++) &#123;</span><br><span class="line">            T temp = arr[i]; <span class="comment">//保存到零时变量中</span></span><br><span class="line">            <span class="keyword">int</span> j = i;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">int</span> k;</span><br><span class="line">                k = j + rotate;</span><br><span class="line">                <span class="keyword">if</span>(k &gt;= length) k -= length;<span class="comment">//这两步相当于 求模运算，优化成减法模式</span></span><br><span class="line">                <span class="keyword">if</span>(k == i) <span class="keyword">break</span>;</span><br><span class="line">                arr[j] = arr[k];</span><br><span class="line">                j = k;</span><br><span class="line">            &#125;</span><br><span class="line">            arr[j] = temp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> arr;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//欧几里得算法求两数的最大公约数（递归实现辗转相除）</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span>  <span class="keyword">int</span> <span class="title">gcd</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(a % b == <span class="number">0</span>) <span class="keyword">return</span> b;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> gcd(b, a % b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>rotate(要旋转的向量) ,length（向量长度 ) ,<code>k = j +rotate;</code><br>难点在循环次数的确定上，当rotate和length互素时，只需要一次循环就可以完成旋转，此时<code>k mod length</code>一直不等于0，就会一直在while循环中，直到所有元素移动一遍，取到最小公倍数，<code>rotate*length</code>时结束循环。 如果不互素，则循环次数既为最大公约数。</p>
+</blockquote>
+<p><img src="/images/2015-9-10_1.PNG" alt="image1"></p>
+<blockquote>
+<p>举例：如在上图中12个元素的数组， 当rotate=3时，如编程珠玑书上一样，此时每轮轮循环正好移动3次元素, k mod length = 0,将 arr[j] = temp，执行3次循环完成旋转。一共需要移动11+1次</p>
+<p>而当rotate=5时，此时互素，只有<code>k=rotate*length =5*12=60</code>，一次for循环，while中 k= (5，10，15，20，25。。。55 ) 60 mod 12=0 ,arr[12] = temp但同样需要移动11+1次。                                                                                         </p>
+</blockquote>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/blog/">blog</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://lijunguan.github.io/2016/01/31/2015-09-10-rotate-vectory/" data-title="旋转向量算法 | Jacman" data-tsina="2176287895" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/31/2015-09-22-file-operate/" title="Thinking in Java——遍历文件目录">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Thinking in Java——遍历文件目录</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/31/2015-09-16-android-resource/"  title="Android 资料">
+ <strong>下一篇：</strong><br/> 
+ <span>Android 资料
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/31/2015-09-10-rotate-vectory/" data-title="旋转向量算法" data-url="http://lijunguan.github.io/2016/01/31/2015-09-10-rotate-vectory/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Foo/Bar/" title="Bar">Bar<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Foo/Bar/Baz/" title="Baz">Baz<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Foo/" title="Foo">Foo<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Photo/" title="Photo">Photo<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/blog/" title="blog">blog<sup>3</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Foo/" title="Foo">Foo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Bar/" title="Bar">Bar<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Baz/" title="Baz">Baz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jacman/" title="Jacman">Jacman<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/consectetur/" title="consectetur">consectetur<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaSE/" title="JavaSE">JavaSE<sup>1</sup></a></li>
+			
+		
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=2176287895&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/wuchong1014" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/wuchong" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/3222790" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/jarkwu" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		<a href="https://www.facebook.com/imjark" target="_blank" class="icon-facebook" title="facebook"></a>
+		
+		
+		<a href="https://www.linkedin.com/in/wuchong1014" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		<a href="https://www.douban.com/people/wuchong1014" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/jark" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		<a href="https://plus.google.com/111190881341800841449?rel=author" target="_blank" class="icon-google_plus" title="Google+"></a>
+		
+		
+		<a href="mailto:imjark@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+				<div class="cc-license">
+          <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+            <img src="/img/cc-by-nc-sa.svg" alt="Creative Commons" />
+          </a>
+        </div>
+    
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="lijunguan">lijunguan</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"wuchong"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
