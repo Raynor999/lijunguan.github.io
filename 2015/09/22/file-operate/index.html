@@ -14,11 +14,11 @@
     <meta name="description" content="实现两个高效的文件遍历任务，可以根据给定正则表达式，匹配遍历当前目录，也可以递归遍历。第二种加入策略设计模式，可以对遍历的文件执行特定操作。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Thinking in Java——遍历文件目录">
-<meta property="og:url" content="http://lijunguan.github.io/2016/01/31/2015-09-22-file-operate/index.html">
+<meta property="og:url" content="http://lijunguan.github.io/2015/09/22/file-operate/index.html">
 <meta property="og:site_name" content="苍穹挽歌">
 <meta property="og:description" content="实现两个高效的文件遍历任务，可以根据给定正则表达式，匹配遍历当前目录，也可以递归遍历。第二种加入策略设计模式，可以对遍历的文件执行特定操作。">
 <meta property="og:image" content="http://lijunguan.github.io/images/2015-9-22.PNG">
-<meta property="og:updated_time" content="2016-01-31T02:53:46.419Z">
+<meta property="og:updated_time" content="2016-02-01T13:56:20.465Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Thinking in Java——遍历文件目录">
 <meta name="twitter:description" content="实现两个高效的文件遍历任务，可以根据给定正则表达式，匹配遍历当前目录，也可以递归遍历。第二种加入策略设计模式，可以对遍历的文件执行特定操作。">
@@ -80,14 +80,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/01/31/2015-09-22-file-operate/" title="Thinking in Java——遍历文件目录" itemprop="url">Thinking in Java——遍历文件目录</a>
+      <a href="/2015/09/22/file-operate/" title="Thinking in Java——遍历文件目录" itemprop="url">Thinking in Java——遍历文件目录</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="lijunguan" target="_blank" itemprop="author">lijunguan</a>
 		
   <p class="article-time">
-    <time datetime="2016-01-31T02:53:46.476Z" itemprop="datePublished"> 发表于 2016-01-31</time>
+    <time datetime="2015-09-22T10:04:51.000Z" itemprop="datePublished"> 发表于 2015-09-22</time>
     
   </p>
 </header>
@@ -96,13 +96,12 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#API"><span class="toc-number">1.</span> <span class="toc-text">API</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#u66F4_u8FDB_u4E00_u6B65"><span class="toc-number"></span> <span class="toc-text">更进一步</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ProcessFiles_uFF1AAPI"><span class="toc-number">1.</span> <span class="toc-text">ProcessFiles：API</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#u521D_u63A2_u7B56_u7565_u8BBE_u8BA1_u6A21_u5F0F"><span class="toc-number"></span> <span class="toc-text">初探策略设计模式</span></a>
 		
 		</div>
 		
 		<p>我们在编程中经常会需要对文件进行遍历，例如在服务器端，保存的各种资源文件，用户上传的文件，为了优化存储，通常都会进行不同形式的目录打散，文件为了防止命名冲突也会重新命名，所以经常就会用到文件遍历等操作。下面介绍两个《Java编程思想》书中的两个Demo，相当不错，并使用了策略设计模式，在接下来会详细介绍，特别是使用策略设计模式的第二个工具类，相当好用。</p>
-<p>####API`</p>
-<ol>
+<h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><ol>
 <li><code>static File[] local(File dir,final String regex)</code><blockquote>
 <p>当前目录下 得到匹配给定正则表达式的文件对象数组</p>
 </blockquote>
@@ -115,17 +114,25 @@
 <p><em>*需要注意一些系统禁止访问的目录，由于缺少权限可能会导致异常。<br>    例Windos：当 Directory.walk(“E:/“,”.</em>“) 遍历E盘回收站隐藏文件的一些目录没有访问权限就会导致异常</p>
 <hr>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Directory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 通过local（）方法 ，可以得到有给定目录文件结构下，符合正则匹配的所有文件组成的 文件对象数组，</span><br><span class="line">     * <span class="doctag">@param</span> dir 目录文件对象</span><br><span class="line">     * <span class="doctag">@param</span> regex 正则表达式</span><br><span class="line">     * <span class="doctag">@return</span> 文件对象数组</span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> File[] local(File dir, <span class="keyword">final</span> String regex) &#123;</span><br><span class="line">		<span class="comment">//listFiles方法根据指定文件名的筛选器，返回一个File文件对象数组。</span></span><br><span class="line">        <span class="keyword">return</span> dir.listFiles(<span class="keyword">new</span> FilenameFilter() &#123;</span><br><span class="line">            <span class="keyword">private</span> Pattern pattern = Pattern.compile(regex);</span><br><span class="line">            <span class="annotation">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">accept</span><span class="params">(File dir, String name)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> pattern.matcher(name).matches();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//Overloaded</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> File[] local(String path, <span class="keyword">final</span> String regex) &#123;</span><br><span class="line">        <span class="keyword">return</span> local(<span class="keyword">new</span> File(path), regex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//内部类</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">FileTree</span> <span class="keyword">implements</span> <span class="title">Iterable</span>&lt;<span class="title">File</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> List&lt;File&gt; files = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">//用来存放文件的集合</span></span><br><span class="line">        <span class="keyword">public</span> List&lt;File&gt; dirs = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">//用来存放目录的集合</span></span><br><span class="line"></span><br><span class="line">        <span class="annotation">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Iterator&lt;File&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> files.iterator();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//递归遍历时使用，将其他TreeInfo类中的files集合加到一起</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">addAll</span><span class="params">(FileTree other)</span> </span>&#123;</span><br><span class="line">            files.addAll(other.files);</span><br><span class="line">            dirs.addAll(other.dirs);</span><br><span class="line">        &#125;</span><br><span class="line">	</span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"dirs: "</span> + PPrint.pformat(dirs) +  <span class="comment">//自定义的打印类</span></span><br><span class="line">                    <span class="string">"\n\nfiles:"</span> + PPrint.pformat(files);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 从给定的起始目录开始递归遍历目录下所有匹配给定正则表达式的文件，</span><br><span class="line">     * 放入TreeInfo内部类的files数组中，目录存放到Dirs集合中</span><br><span class="line">     * <span class="doctag">@param</span> start 要遍历的目录</span><br><span class="line">     * <span class="doctag">@param</span> regex 要匹配文件的正则表达式，</span><br><span class="line">     * <span class="doctag">@return</span> 返回一个TreeInfo的内部类，该类有一个包含所有文件对象的files集合，和一个包含所有目录的dirs集合</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileTree <span class="title">walk</span><span class="params">(File start, String regex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> recurseDirs(start, regex); <span class="comment">//调用递归遍历函数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Overload 的walk(File start, String regex)方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileTree <span class="title">walk</span><span class="params">(String start, String regex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> recurseDirs(<span class="keyword">new</span> File(start), regex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Overload，匹配所有文件</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileTree <span class="title">walk</span><span class="params">(File start)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> recurseDirs(start, <span class="string">"*"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Overload</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileTree <span class="title">walk</span><span class="params">(String start)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> recurseDirs(<span class="keyword">new</span> File(start), <span class="string">".*"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> FileTree <span class="title">recurseDirs</span><span class="params">(File startDir, String regex)</span> </span>&#123;</span><br><span class="line">        FileTree result = <span class="keyword">new</span> FileTree();</span><br><span class="line">        File[] files = startDir.listFiles();</span><br><span class="line">        <span class="keyword">if</span> (files != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (File item : files) &#123;</span><br><span class="line">                <span class="keyword">if</span> (item.isDirectory()) &#123;</span><br><span class="line">                    result.dirs.add(item); <span class="comment">//将目录放到dirs集合中</span></span><br><span class="line">                    <span class="comment">//递归遍历这个子目录，将子目录的files集合、dirs集合，加到其父目录的file\dirs集合中</span></span><br><span class="line">                    result.addAll(recurseDirs(item, regex));</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (item.getName().matches(regex)) &#123;</span><br><span class="line">                        result.files.add(item);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//自定义的打印类，可以再打印集合元素时，每个元素自动换行，方便查看效果</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PPrint</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">pformat</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (c.size() == <span class="number">0</span>) <span class="keyword">return</span> <span class="string">"[]"</span>;</span><br><span class="line">        StringBuilder result = <span class="keyword">new</span> StringBuilder(<span class="string">"["</span>);</span><br><span class="line">        <span class="keyword">for</span> (Object elem : c) &#123;</span><br><span class="line">            <span class="keyword">if</span> (c.size() != <span class="number">1</span>)</span><br><span class="line">                result.append(<span class="string">"\n  "</span>);</span><br><span class="line">            result.append(elem);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (c.size() != <span class="number">1</span>)</span><br><span class="line">            result.append(<span class="string">"\n"</span>);</span><br><span class="line">        result.append(<span class="string">"]"</span>);</span><br><span class="line">        <span class="keyword">return</span> result.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pprint</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        System.out.println(pformat(c));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pprint</span><span class="params">(Object[] c)</span> </span>&#123;</span><br><span class="line">        System.out.println(pformat(Arrays.asList(c)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>##更进一步</p>
-<p>####ProcessFiles：API<br>    1.内部接口<br>        public interface Strategy {<br>            void process(File file);<br>        }<br>    2.构造函数<br>    //构造函数，需要传递一个文件后缀名的正则表达式，和一个Strategy接口的实例<br>    public ProcessFiles(String ext, Strategy strategy) {<br>        this.ext = ext;<br>        this.strategy = strategy;<br>    }<br>    3.public void start(String[] args) //args:需要遍历目录参数 数组</p>
-<p>下面给是一个ProcessFiles的测试类，先看下如何使用，感受一下，他的强大之处.遍历E:盘下的所有java文件，并打印文件名和该文件的大小。 最后打印出文件数量</p>
+<h2 id="u66F4_u8FDB_u4E00_u6B65"><a href="#u66F4_u8FDB_u4E00_u6B65" class="headerlink" title="更进一步"></a>更进一步</h2><h4 id="ProcessFiles_uFF1AAPI"><a href="#ProcessFiles_uFF1AAPI" class="headerlink" title="ProcessFiles：API"></a>ProcessFiles：API</h4><pre><code>1.内部接口
+    public interface Strategy {
+        void process(File file);
+    }
+2.构造函数
+//构造函数，需要传递一个文件后缀名的正则表达式，和一个Strategy接口的实例
+public ProcessFiles(String ext, Strategy strategy) {
+    this.ext = ext;
+    this.strategy = strategy;
+}
+3.public void start(String[] args) //args:需要遍历目录参数 数组
+</code></pre><p>下面给是一个ProcessFiles的测试类，先看下如何使用，感受一下，他的强大之处.遍历E:盘下的所有java文件，并打印文件名和该文件的大小。 最后打印出文件数量</p>
 <figure class="highlight plain"><figcaption><span>lang: java</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class ProcessFilesTest &#123;&#10;    static  int count = 0;&#10;    @Test&#10;    public void testStart() throws Exception &#123;&#10;&#9;&#9;//&#21311;&#21517;&#31867;&#10;         new ProcessFiles(&#34;java&#34;, new ProcessFiles.Strategy() &#123;&#10;            @Override //&#25509;&#21475;&#20013;&#30340;&#26041;&#27861;&#10;            public void process(File file) &#123;&#10;                count++;&#10;                System.out.println(file.getName() + &#34;:&#34; + file.length());&#10;            &#125;&#10;        &#125;).start(new String[]&#123;&#34;E:/&#34;&#125;);&#10;        System.out.println(&#34;E:&#25991;&#20214;&#25968;&#37327;&#20026;&#34; + count);&#10;    &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
 <p>下面是程序输出结果的部分截图<br><img src="/images/2015-9-22.PNG" alt="output"></p>
 <blockquote>
 <p>程序很简单，主要内部定义了一个接口，该接口只有一个process（File file)方法，创建该类需要实现这个接口。  start(String[] args)方法是启动方法，根据传入的参数再去调用processDirectoryTree(File root)这个方法，去遍历目录，让每一文件对象执行接口中的process方法。 通常我们遍历文件都是想对指定文件做一些操作，我们通过重写接口中的process方法，就可以实现对文件不同的操作，这就是策略设计模式的好处，下面会做介绍。</p>
 </blockquote>
 <p>下面是源代码：<br><figure class="highlight plain"><figcaption><span>lang: java</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class ProcessFiles &#123;&#10;    //&#20869;&#37096;&#25509;&#21475;&#65292;&#20351;&#29992;&#31574;&#30053;&#35774;&#35745;&#27169;&#24335;&#65292;&#23454;&#29616;&#35813;&#25509;&#21475;&#65292;&#30340;process&#26041;&#27861;&#65292;&#21487;&#20197;&#35753;&#27599;&#19968;&#20010;&#36941;&#21382;&#30340;&#25991;&#20214;&#10;    //&#23545;&#35937;&#25191;&#34892;process&#65288;&#65289;&#26041;&#27861;&#10;    public interface Strategy &#123;&#10;        void process(File file);&#10;    &#125;&#10;    private Strategy strategy; //&#10;    private String ext; //&#25193;&#23637;&#21517;&#65292;&#20063;&#21487;&#20197;&#26159;&#27491;&#21017;&#34920;&#36798;&#24335;&#10;    //&#26500;&#36896;&#20989;&#25968;&#65292;&#38656;&#35201;&#20256;&#36882;&#19968;&#20010;&#27491;&#21017;&#34920;&#36798;&#24335;&#65292;&#21644;&#19968;&#20010;Strategy&#25509;&#21475;&#30340;&#23454;&#20363;&#10;    public ProcessFiles(String ext, Strategy strategy) &#123;&#10;        this.ext = ext;&#10;        this.strategy = strategy;&#10;    &#125;&#10;&#10;    public void start(String[] args) &#123;&#10;        try &#123;&#10;            if (args.length == 0) &#123;&#10;                processDirectoryTree(new File(&#34;.&#34;));&#10;                return;&#10;            &#125;&#10;            for (String arg : args) &#123;&#10;                File fileArg = new File(arg);&#10;                if (fileArg.isDirectory()) &#123;&#10;                    processDirectoryTree(fileArg);&#10;                &#125; else &#123;&#10;                    //&#20801;&#35768;&#29992;&#25143;&#19981;&#36755;&#20837;&#25991;&#20214;&#21518;&#32512;&#65292;&#24403;&#29992;&#25143;&#20026;&#36755;&#20837;&#21518;&#32512;&#26102;&#65292;&#34917;&#40784;&#21518;&#32512;&#10;                    if (!arg.endsWith(&#34;.&#34; + ext))&#10;                        arg += &#34;.&#34; + ext;&#10;                    strategy.process(new File(arg).getCanonicalFile());&#10;                &#125;&#10;            &#125;&#10;        &#125; catch (IOException e) &#123;&#10;            throw new RuntimeException(e);&#10;        &#125;&#10;    &#125;&#10;&#10;    private void processDirectoryTree(File root) throws IOException &#123;&#10;        //&#36941;&#21382;  Directory.walk()&#26041;&#27861;&#24471;&#21040;&#25152;&#26377;&#25991;&#20214;&#65292;&#10;        for (File file : Directory.walk(root.getAbsoluteFile(), &#34;.*\\.&#34; + ext)) &#123;&#10;            strategy.process(file.getCanonicalFile());//&#25191;&#34892;Strategy&#30340; process()&#26041;&#27861;&#10;        &#125;&#10;    &#125;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
-<p>##初探策略设计模式</p>
-<blockquote>
+<h2 id="u521D_u63A2_u7B56_u7565_u8BBE_u8BA1_u6A21_u5F0F"><a href="#u521D_u63A2_u7B56_u7565_u8BBE_u8BA1_u6A21_u5F0F" class="headerlink" title="初探策略设计模式"></a>初探策略设计模式</h2><blockquote>
 <p>策略模式使用场景，一般是某一个对象，在不同情况下，会执行不同的策略方法，比如一个人区上班，可以选择步行、骑车、开车等等。再例如交税，在中国可能一套交税策略，在美国是另一套交税策略。如果我们将这些方法封装在一个统一的方法中，相当不利于维护，同时需要增加大量else if语句，使代码难以阅读。也很难进行动态扩展。</p>
 <p>从上面这个文件操作例子我们就可以看到策略模式的好处，我们每次对文件的操作，总是多种多样的，有时候要计算大小，有时候统计数量，有时候要删除，有时候又要修改。。。。 如果没一个操作都写一个方法，需求总是多种多样，而且有时候一种操作使用次数极少，也单独定义一个方法，会导致代码冗长，而且很难动态扩展。我们通过实现Strategy接口中的process（）方法就可以执行不同的策略。</p>
 </blockquote>
@@ -139,11 +146,6 @@
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/blog/">blog</a>
-</div>
-
 
   <div class="article-tags">
   
@@ -156,7 +158,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://lijunguan.github.io/2016/01/31/2015-09-22-file-operate/" data-title="Thinking in Java——遍历文件目录 | 苍穹挽歌" data-tsina="1807586831" class="share clearfix">
+	  <div data-url="http://lijunguan.github.io/2015/09/22/file-operate/" data-title="Thinking in Java——遍历文件目录 | 苍穹挽歌" data-tsina="1807586831" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -170,19 +172,27 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2016/01/31/2015-09-10-rotate-vectory/" title="旋转向量算法">
+ <a href="/2016/02/01/Retrofit2入门篇/" title="Retrofit2入门篇">
   <strong>上一篇：</strong><br/>
   <span>
-  旋转向量算法</span>
+  Retrofit2入门篇</span>
 </a>
 </div>
 
+
+<div class="next">
+<a href="/2015/09/10/rotate-vectory/"  title="旋转向量算法">
+ <strong>下一篇：</strong><br/> 
+ <span>旋转向量算法
+</span>
+</a>
+</div>
 
 </nav>
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/01/31/2015-09-22-file-operate/" data-title="Thinking in Java——遍历文件目录" data-url="http://lijunguan.github.io/2016/01/31/2015-09-22-file-operate/"></div>
+	<div class="ds-thread" data-thread-key="2015/09/22/file-operate/" data-title="Thinking in Java——遍历文件目录" data-url="http://lijunguan.github.io/2015/09/22/file-operate/"></div>
 </section>
 
 
@@ -192,7 +202,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#API"><span class="toc-number">1.</span> <span class="toc-text">API</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#u66F4_u8FDB_u4E00_u6B65"><span class="toc-number"></span> <span class="toc-text">更进一步</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ProcessFiles_uFF1AAPI"><span class="toc-number">1.</span> <span class="toc-text">ProcessFiles：API</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#u521D_u63A2_u7B56_u7565_u8BBE_u8BA1_u6A21_u5F0F"><span class="toc-number"></span> <span class="toc-text">初探策略设计模式</span></a>
  
   </div>
 
@@ -206,7 +216,11 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/blog/" title="blog">blog<sup>3</sup></a></li>
+			<li><a href="/categories/Android/" title="Android">Android<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/blog/" title="blog">blog<sup>1</sup></a></li>
 		  
 		
 		</ul>
@@ -219,7 +233,23 @@
 		<ul class="clearfix">
 		
 			
+				<li><a href="/tags/网络通信/" title="网络通信">网络通信<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Retrofit2/" title="Retrofit2">Retrofit2<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/JavaSE/" title="JavaSE">JavaSE<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/算法/" title="算法">算法<sup>1</sup></a></li>
 			
 		
 			
